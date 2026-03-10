@@ -1,20 +1,28 @@
 import { useParams, useNavigate } from "react-router-dom"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { getPost, updatePost } from "../services/postService"
-import { QueryClient, useMutation } from "@tanstack/react-query"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 
 function PostEditPage() {
 
   const { id } = useParams()
   const navigate = useNavigate()
-  const queryClient = new QueryClient()
+  const queryClient = useQueryClient()
 
-  const post = getPost(Number(id))
+  const { data: post } = useQuery({
+    queryKey: ["post", id],
+    queryFn: () => getPost(Number(id))
+  })
 
-  const [title, setTitle] = useState(post?.title || "")
-  const [content, setContent] = useState(post?.content || "")
+  const [title, setTitle] = useState("")
+  const [content, setContent] = useState("")
 
-  if (!post) return <div>post not found</div>
+  useEffect(() => {
+    if (post) {
+      setTitle(post.title)
+      setContent(post.content)
+    }
+  }, [post])
 
   const updateMutation = useMutation({
     mutationFn: updatePost,
@@ -24,6 +32,8 @@ function PostEditPage() {
   })
 
   const handleSubmit = () => {
+    if (!post) return
+
     updateMutation.mutate({
       id: post.id,
       title,
@@ -32,27 +42,27 @@ function PostEditPage() {
     navigate(`/posts/${post.id}`)
   }
 
-  return (
-    <div>
+  if (!post) {
+    return <div>post not found</div>
 
-      <h1>글 수정</h1>
-
-      <input
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}
-      />
-
-      <textarea
-        value={content}
-        onChange={(e) => setContent(e.target.value)}
-      />
-
-      <button onClick={handleSubmit}>
-        수정 완료
-      </button>
-
-    </div>
-  )
+  } else {
+    return (
+      <div>
+        <h1>글 수정</h1>
+        <input
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+        />
+        <textarea
+          value={content}
+          onChange={(e) => setContent(e.target.value)}
+        />
+        <button onClick={handleSubmit}>
+          수정 완료
+        </button>
+      </div>
+    )
+  }
 }
 
 export default PostEditPage

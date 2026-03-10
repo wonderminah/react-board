@@ -1,48 +1,45 @@
 import type { Post } from "../types/Post";
 import { mockPosts } from "../data/mockPosts";
 
-const STORAGE_KEY = "posts"
-let posts: Post[] = loadPosts()
+const API_URL = "http://localhost:3001/posts"
 
 // json CRUD
-export async function createPost(post: Post) {
-    posts.push(post)
-    savePosts(posts)
+export async function createPost(post: Post): Promise<Post> {
+  const res = await fetch(API_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(post)
+  })
+
+  return res.json()
 }
 
-export function getPosts() {
-    return posts
+export async function getPosts(): Promise<Post[]> {
+  const res = await fetch(API_URL)
+  return res.json()
 }
 
-export function getPost(id: number) {
-    return posts.find(p => p.id ===id)
+export async function getPost(id: number): Promise<Post> {
+  const res = await fetch(`${API_URL}/${id}`)
+  return res.json()
 }
 
-export async function updatePost(updatePost: Post) {
-    posts = posts.map(post =>
-        post.id === updatePost.id ? updatePost : post
-    )
-    savePosts(posts)
+export async function updatePost(post: Post): Promise<Post> {
+  const res = await fetch(`${API_URL}/${post.id}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(post)
+  })
+
+  return res.json()
 }
 
-export async function deletePost(id: number) {
-    posts = posts.filter(p => p.id !== id)
-    savePosts(posts)
+export async function deletePost(id: number): Promise<void> {
+  await fetch(`${API_URL}/${id}`, {
+    method: "DELETE"
+  })
 }
-
-// localStorage CRUD
-function loadPosts(): Post[] {
-
-  const stored = localStorage.getItem(STORAGE_KEY)
-
-  if (stored) {
-    return JSON.parse(stored)
-  }
-
-  return mockPosts
-}
-
-function savePosts(posts: Post[]) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(posts))
-}
-

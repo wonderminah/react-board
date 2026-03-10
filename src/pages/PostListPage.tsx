@@ -9,26 +9,29 @@ function PostListPage() {
     queryFn: getPosts
   })
 
-  if (!posts) return <div>loading...</div>
+  if (!posts) {
+    return <div>loading...</div>
 
-  return (
-    <div>
-      <h1>게시판</h1>
+  } else {
+    return (
+      <div>
+        <h1>게시판</h1>
 
-      <Link to="/create">글쓰기</Link>
+        <Link to="/create">글쓰기</Link>
 
-      <ul>
-        {posts.map(post => (
-          <li key={post.id}>
-            <Link to={`/posts/${post.id}`}>
-              {post.title}
-            </Link>
-          </li>
-        ))}
-      </ul>
+        <ul>
+          {posts.map(post => (
+            <li key={post.id}>
+              <Link to={`/posts/${post.id}`}>
+                {post.title}
+              </Link>
+            </li>
+          ))}
+        </ul>
 
-    </div>
-  )
+      </div>
+    )
+  }
 }
 
 export default PostListPage

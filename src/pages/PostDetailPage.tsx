@@ -13,11 +13,6 @@ function PostDetailPage() {
         queryFn: () => getPost(Number(id))
     })
 
-    const handleDelete = () => {
-        if (!post) return
-        deleteMutation.mutate(post.id)
-    }
-
     const deleteMutation = useMutation({
         mutationFn: deletePost,
         onSuccess: () => {
@@ -25,6 +20,11 @@ function PostDetailPage() {
             navigate("/")
         }
     })
+
+    const handleDelete = () => {
+        if (!post) return
+        deleteMutation.mutate(post.id)
+    }
 
     if (!post) {
         return <div>post not found</div>
