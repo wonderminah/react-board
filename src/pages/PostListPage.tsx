@@ -1,9 +1,15 @@
 import { Link } from "react-router-dom"
 import { getPosts } from "../services/postService"
+import { useQuery } from "@tanstack/react-query"
 
 function PostListPage() {
 
-  const posts = getPosts()
+  const { data: posts } = useQuery({
+    queryKey: ["posts"],
+    queryFn: getPosts
+  })
+
+  if (!posts) return <div>loading...</div>
 
   return (
     <div>

@@ -5,7 +5,7 @@ const STORAGE_KEY = "posts"
 let posts: Post[] = loadPosts()
 
 // json CRUD
-export function createPost(post: Post) {
+export async function createPost(post: Post) {
     posts.push(post)
     savePosts(posts)
 }
@@ -18,14 +18,14 @@ export function getPost(id: number) {
     return posts.find(p => p.id ===id)
 }
 
-export function updatePost(updatePost: Post) {
+export async function updatePost(updatePost: Post) {
     posts = posts.map(post =>
         post.id === updatePost.id ? updatePost : post
     )
     savePosts(posts)
 }
 
-export function deletePost(id: number) {
+export async function deletePost(id: number) {
     posts = posts.filter(p => p.id !== id)
     savePosts(posts)
 }

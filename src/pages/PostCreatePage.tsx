@@ -1,6 +1,7 @@
 import { useState } from "react"
 import { createPost } from "../services/postService"
 import { useNavigate } from "react-router-dom"
+import { QueryClient, useMutation } from "@tanstack/react-query"
 
 function PostCreatePage() {
 
@@ -8,15 +9,21 @@ function PostCreatePage() {
   const [content, setContent] = useState("")
 
   const navigate = useNavigate()
+  const queryClient = new QueryClient()
+
+  const createMutation = useMutation({
+      mutationFn: createPost,
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ["posts"]} )
+      }
+    })
 
   const handleSubmit = () => {
-
-    createPost({
+    createMutation.mutate({
       id: Date.now(),
       title,
       content
     })
-
     navigate("/")
   }
 

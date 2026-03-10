@@ -1,11 +1,13 @@
 import { useParams, useNavigate } from "react-router-dom"
 import { useState } from "react"
 import { getPost, updatePost } from "../services/postService"
+import { QueryClient, useMutation } from "@tanstack/react-query"
 
 function PostEditPage() {
 
   const { id } = useParams()
   const navigate = useNavigate()
+  const queryClient = new QueryClient()
 
   const post = getPost(Number(id))
 
@@ -14,14 +16,19 @@ function PostEditPage() {
 
   if (!post) return <div>post not found</div>
 
-  const handleSubmit = () => {
+  const updateMutation = useMutation({
+    mutationFn: updatePost,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["posts"] })
+    }
+  })
 
-    updatePost({
+  const handleSubmit = () => {
+    updateMutation.mutate({
       id: post.id,
       title,
       content
     })
-
     navigate(`/posts/${post.id}`)
   }
 
