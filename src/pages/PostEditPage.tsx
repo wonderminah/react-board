@@ -9,8 +9,8 @@ function PostEditPage() {
   const navigate = useNavigate()
   const queryClient = useQueryClient()
 
-  const { data: post } = useQuery({
-    queryKey: ["post", id],
+  const { data: post, isLoading, isError } = useQuery({
+    queryKey: ["posts", id],
     queryFn: () => getPost(Number(id))
   })
 
@@ -28,6 +28,7 @@ function PostEditPage() {
     mutationFn: updatePost,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["posts"] })
+      navigate(`/posts/${post!.id}`)
     }
   })
 
@@ -39,30 +40,28 @@ function PostEditPage() {
       title,
       content
     })
-    navigate(`/posts/${post.id}`)
   }
 
-  if (!post) {
-    return <div>post not found</div>
+  if (isLoading) return <div>로딩 중...</div>
+  if (isError) return <div>불러오기 실패</div>
+  if (!post) return <div>post not found</div>
 
-  } else {
-    return (
-      <div>
-        <h1>글 수정</h1>
-        <input
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-        />
-        <textarea
-          value={content}
-          onChange={(e) => setContent(e.target.value)}
-        />
-        <button onClick={handleSubmit}>
-          수정 완료
-        </button>
-      </div>
-    )
-  }
+  return (
+    <div>
+      <h1>글 수정</h1>
+      <input
+        value={title}
+        onChange={(e) => setTitle(e.target.value)}
+      />
+      <textarea
+        value={content}
+        onChange={(e) => setContent(e.target.value)}
+      />
+      <button onClick={handleSubmit}>
+        수정 완료
+      </button>
+    </div>
+  )
 }
 
 export default PostEditPage

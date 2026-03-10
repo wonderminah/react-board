@@ -1,5 +1,4 @@
 import type { Post } from "../types/Post";
-import { mockPosts } from "../data/mockPosts";
 
 const API_URL = "http://localhost:3001/posts"
 

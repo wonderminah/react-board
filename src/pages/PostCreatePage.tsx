@@ -14,7 +14,8 @@ function PostCreatePage() {
   const createMutation = useMutation({
       mutationFn: createPost,
       onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: ["posts"]} )
+        queryClient.invalidateQueries({ queryKey: ["posts"] })
+        navigate("/")
       }
     })
 
@@ -24,7 +25,6 @@ function PostCreatePage() {
       title,
       content
     })
-    navigate("/")
   }
 
   return (

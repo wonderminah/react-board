@@ -4,16 +4,16 @@ import { useQuery } from "@tanstack/react-query"
 
 function PostListPage() {
 
-  const { data: posts } = useQuery({
+  const { data: posts, isLoading, isError } = useQuery({
     queryKey: ["posts"],
     queryFn: getPosts
   })
 
-  if (!posts) {
-    return <div>loading...</div>
+  if (isLoading) return <div>로딩 중...</div>
+  if (isError) return <div>불러오기 실패</div>
+  if (!posts) return null
 
-  } else {
-    return (
+  return (
       <div>
         <h1>게시판</h1>
 
@@ -31,7 +31,6 @@ function PostListPage() {
 
       </div>
     )
-  }
 }
 
 export default PostListPage

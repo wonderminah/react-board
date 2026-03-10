@@ -1,5 +1,5 @@
 import { Link, useNavigate, useParams } from "react-router-dom"
-import { deletePost, getPost, getPosts } from "../services/postService"
+import { deletePost, getPost } from "../services/postService"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 
 function PostDetailPage() {
@@ -8,8 +8,8 @@ function PostDetailPage() {
     const navigate = useNavigate()
     const queryClient = useQueryClient()
 
-    const { data: post } = useQuery({
-        queryKey: ["post", id],
+    const { data: post, isLoading, isError } = useQuery({
+        queryKey: ["posts", id],
         queryFn: () => getPost(Number(id))
     })
 
@@ -26,20 +26,19 @@ function PostDetailPage() {
         deleteMutation.mutate(post.id)
     }
 
-    if (!post) {
-        return <div>post not found</div>
+    if (isLoading) return <div>로딩 중...</div>
+    if (isError) return <div>불러오기 실패</div>
+    if (!post) return <div>post not found</div>
 
-    } else {
-        return (
-            <div>
-                <h1>{post.title}</h1>
-                <p>{post.content}</p>
+    return (
+        <div>
+            <h1>{post.title}</h1>
+            <p>{post.content}</p>
 
-                <button><Link to={`/edit/${post.id}`}>수정하기</Link></button>
-                <button onClick={handleDelete}>삭제하기</button>
-            </div>
-        )
-    }
+            <button><Link to={`/edit/${post.id}`}>수정하기</Link></button>
+            <button onClick={handleDelete}>삭제하기</button>
+        </div>
+    )
 }
 
 export default PostDetailPage
