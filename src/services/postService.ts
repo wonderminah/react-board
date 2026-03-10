@@ -1,10 +1,13 @@
 import type { Post } from "../types/Post";
 import { mockPosts } from "../data/mockPosts";
 
-let posts: Post[] = [...mockPosts]
+const STORAGE_KEY = "posts"
+let posts: Post[] = loadPosts()
 
+// json CRUD
 export function createPost(post: Post) {
     posts.push(post)
+    savePosts(posts)
 }
 
 export function getPosts() {
@@ -19,8 +22,27 @@ export function updatePost(updatePost: Post) {
     posts = posts.map(post =>
         post.id === updatePost.id ? updatePost : post
     )
+    savePosts(posts)
 }
 
 export function deletePost(id: number) {
     posts = posts.filter(p => p.id !== id)
+    savePosts(posts)
 }
+
+// localStorage CRUD
+function loadPosts(): Post[] {
+
+  const stored = localStorage.getItem(STORAGE_KEY)
+
+  if (stored) {
+    return JSON.parse(stored)
+  }
+
+  return mockPosts
+}
+
+function savePosts(posts: Post[]) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(posts))
+}
+
